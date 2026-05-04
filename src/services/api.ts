@@ -7,11 +7,22 @@ async function request<T>(path: string, options?: RequestInit): Promise<ApiRespo
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     ...options,
   });
+
+  const body = await res.json().catch(() => ({}));
+
   if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    throw new Error(body.message ?? `Error ${res.status}`);
+    let message = body?.message || `Error ${res.status}`;
+
+    if (body?.errors) {
+      message = Object.values(body.errors)
+        .flat()
+        .join(', ');
+    }
+
+    throw new Error(message);
   }
-  return res.json();
+
+  return body;
 }
 
 // ── Hoteles ──────────────────────────────────────────────────

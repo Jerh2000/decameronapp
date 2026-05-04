@@ -98,15 +98,21 @@ export default function Index() {
     }
   };
 
-  const handleAddRoom = async (data: RoomConfigurationPayload) => {
+   const handleAddRoom = async (data: RoomConfigurationPayload) => {
     setLoading(true);
     try {
       await api.addRoomConfiguration(selectedHotel!.id!, data);
       const r = await api.getRoomConfigurations(selectedHotel!.id!);
       setRooms(r);
       toast({ title: 'Éxito', description: 'Configuración agregada.' });
-    } catch {
-      toast({ title: 'Error', description: 'No se pudo agregar.', variant: 'destructive' });
+    } catch (error: any) {
+      console.error(error);
+
+      toast({
+        title: 'Error',
+        description: error?.message || 'No se pudo agregar.',
+        variant: 'destructive',
+      });
     } finally {
       setLoading(false);
     }
